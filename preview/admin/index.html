@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="tr">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="robots" content="noindex, nofollow">
+	<title>Yönetim Paneli — Nurettin Rençber</title>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap">
+	<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+
+<!-- Giriş -->
+<main class="login" id="login" hidden>
+	<form class="login-card" id="login-form">
+		<img src="/favicon.svg" alt="" width="56" height="56">
+		<h1>Yönetim Paneli</h1>
+		<p class="muted">Nurettin Rençber web sitesi</p>
+		<label>Şifre
+			<input type="password" name="password" autocomplete="current-password" required autofocus>
+		</label>
+		<button class="btn primary" type="submit">Giriş yap</button>
+		<p class="form-error" id="login-error" role="alert"></p>
+	</form>
+</main>
+
+<!-- Kurulum eksik -->
+<main class="login" id="setup" hidden>
+	<div class="login-card">
+		<img src="/favicon.svg" alt="" width="56" height="56">
+		<h1>Kurulum tamamlanmamış</h1>
+		<p class="muted">Panelin çalışması için Vercel’de <code>ADMIN_PASSWORD</code> ve <code>GITHUB_TOKEN</code> ortam değişkenlerinin girilmesi gerekiyor.</p>
+	</div>
+</main>
+
+<!-- Panel -->
+<div class="app" id="app" hidden>
+	<header class="topbar">
+		<a class="brand" href="/" target="_blank" rel="noopener"><img src="/favicon.svg" alt="" width="28" height="28"><span>Rençber <b>Panel</b></span></a>
+		<div class="topbar-actions">
+			<span class="save-state" id="save-state" aria-live="polite"></span>
+			<button class="btn primary" id="publish" type="button" disabled>Kaydet ve yayınla</button>
+			<button class="btn ghost" id="logout" type="button">Çıkış</button>
+		</div>
+	</header>
+
+	<nav class="tabs" id="tabs" aria-label="Bölümler">
+		<button data-tab="events" class="is-active">Konserler</button>
+		<button data-tab="releases">Diskografi</button>
+		<button data-tab="hero">Açılış videosu</button>
+		<button data-tab="texts">Metinler</button>
+		<button data-tab="about">Hakkında</button>
+		<button data-tab="gallery">Galeri</button>
+		<button data-tab="videos">Videolar</button>
+		<button data-tab="links">Bağlantılar</button>
+		<button data-tab="contact">İletişim</button>
+		<button data-tab="seo">SEO</button>
+	</nav>
+
+	<main class="panel" id="panel"></main>
+</div>
+
+<dialog class="modal" id="modal">
+	<form method="dialog" class="modal-card" id="modal-form" novalidate>
+		<header class="modal-head">
+			<h2 id="modal-title"></h2>
+			<button class="icon-btn" type="button" onclick="this.closest('dialog').close('cancel')" aria-label="Kapat">✕</button>
+		</header>
+		<div class="modal-body" id="modal-body"></div>
+		<footer class="modal-foot">
+			<button class="btn danger" type="button" id="modal-delete" hidden>Sil</button>
+			<span class="spacer"></span>
+			<button class="btn ghost" type="button" onclick="this.closest('dialog').close('cancel')">Vazgeç</button>
+			<button class="btn primary" value="ok" id="modal-ok">Tamam</button>
+		</footer>
+	</form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/admin/admin.js" defer></script>
+</body>
+</html>

@@ -25,7 +25,7 @@ Her şey **Görünüm › Özelleştir › Rençber Site Ayarları** panelinden 
 
 ## Kurulum
 
-1. `dist/rencber.zip` dosyasını kullanın.
+1. `dist/rencber.zip` dosyasını kullanın (WordPress'e geri dönülürse).
 2. WordPress › Görünüm › Temalar › Yeni ekle › **Tema yükle** › `rencber.zip` › Etkinleştir.
 3. Tema ilk açılışta şunları kendiliğinden aktarır:
    - eski sitedeki albüm kapaklarını, galeriyi ve biyografi fotoğrafını,
@@ -36,12 +36,23 @@ Her şey **Görünüm › Özelleştir › Rençber Site Ayarları** panelinden 
 4. Ayarlar › Kalıcı bağlantılar › **Kaydet**. Bu adım `/konserler/` ve `/albumler/` adreslerinin çalışması için bir kez yapılır.
 5. Enfold temasını hemen silmeyin; birkaç gün yedek olarak dursun.
 
-## Önizlemeyi yeniden üretmek
+## Yayındaki site (Vercel) ve yönetim paneli
+
+Canlı site `data/site.json` dosyasından üretilir (`tools/build.mjs`, Vercel her commit'te çalıştırır).
+
+- **Yönetim paneli:** `https://www.nurettinrencber.com.tr/admin`
+  - Panelde konserler, diskografi, açılış videosu, metinler, Hakkında, galeri, videolar, bağlantılar, iletişim ve SEO düzenlenir.
+  - "Kaydet ve yayınla" değişikliği GitHub'a commit eder; Vercel yaklaşık 1 dakikada yayınlar.
+  - Fotoğraflar tarayıcıda küçültülüp `preview/uploads/` altına kaydedilir.
+- **Günlük yenileme:** Vercel Cron her gece `/api/cron`'u çağırır. Tarihi geçen konserler düşer, YouTube videoları güncellenir.
+- **Gerekli Vercel ortam değişkenleri:**
+  - `ADMIN_PASSWORD`: panel şifresi, en az 10 karakter.
+  - `GITHUB_TOKEN`: yalnızca bu depoya *Contents: Read and write* yetkili fine-grained token.
+
+Yerelde deneme:
 
 ```bash
-python tools/build_preview.py
+ADMIN_PASSWORD=bir-test-sifresi node tools/dev-server.mjs
 ```
 
-Bu komut görselleri indirir, `preview/index.html` dosyasını temanın CSS/JS dosyalarıyla üretir; favicon, `robots.txt`, `sitemap.xml` ve `dist/rencber.zip` paketini oluşturur. Vercel `preview/` klasörünü yayınlar (`vercel.json`); eski WordPress adresleri (`/hakkimda/` vb.) ilgili bölümlere yönlendirilir.
-
-**Not:** Vercel sürümü statiktir; konser/albüm değişiklikleri `tools/build_preview.py` ve `rencber/inc/yayinlar.json` üzerinden yapılıp yeniden yayınlanır.
+Bu komut `http://localhost:5174/admin` adresinde çalışır; GitHub yerine yerel dosyalara yazar.

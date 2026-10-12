@@ -1,11 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "",
   "installCommand": "",
+  "buildCommand": "node tools/build.mjs",
   "outputDirectory": "preview",
   "cleanUrls": true,
   "trailingSlash": false,
+  "crons": [
+    { "path": "/api/cron", "schedule": "0 1 * * *" }
+  ],
   "redirects": [
     { "source": "/hakkimda", "destination": "/#hakkinda", "permanent": true },
     { "source": "/albumlerim", "destination": "/#albumler", "permanent": true },
@@ -16,14 +19,31 @@
     { "source": "/konserler", "destination": "/#konserler", "permanent": true },
     { "source": "/konser/:slug*", "destination": "/#konserler", "permanent": true },
     { "source": "/ana-sayfa", "destination": "/", "permanent": true },
-    { "source": "/wp-admin/:path*", "destination": "/", "permanent": false },
-    { "source": "/wp-login.php", "destination": "/", "permanent": false },
+    { "source": "/wp-admin/:path*", "destination": "/admin", "permanent": false },
+    { "source": "/wp-login.php", "destination": "/admin", "permanent": false },
     { "source": "/feed/:path*", "destination": "/", "permanent": true }
   ],
   "headers": [
     {
       "source": "/(.*)\\.(webp|jpg|png|svg|ico)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
+    },
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "same-origin" }
+      ]
+    },
+    {
+      "source": "/admin",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
     }
   ]
 }
