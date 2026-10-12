@@ -75,6 +75,10 @@ function rencber_resource_hints( $urls, $relation ) {
 	if ( 'preconnect' === $relation ) {
 		$urls[] = array( 'href' => 'https://fonts.gstatic.com', 'crossorigin' );
 		$urls[] = 'https://fonts.googleapis.com';
+		if ( is_front_page() && 'youtube' === rencber_mod( 'hero_video_type' ) ) {
+			$urls[] = 'https://www.youtube-nocookie.com';
+			$urls[] = 'https://www.google.com';
+		}
 	}
 	return $urls;
 }

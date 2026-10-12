@@ -26,12 +26,15 @@ $title   = rencber_mod( 'hero_title' );
 ?>
 <section class="hero" data-hero="<?php echo esc_attr( $type ); ?>" aria-label="<?php echo esc_attr( $title ); ?>">
 	<div class="hero-media">
-		<?php if ( $poster ) : ?>
+		<?php if ( $poster && 'image' === $type ) : ?>
 			<img class="hero-poster" src="<?php echo esc_url( $poster ); ?>" alt="" fetchpriority="high" decoding="async">
+		<?php elseif ( $poster ) : ?>
+			<?php // Video varken fotoğraf indirilmez; yalnızca "hareketi azalt" kullanıcıları için yedek. ?>
+			<img class="hero-poster" data-src="<?php echo esc_url( $poster ); ?>" alt="" decoding="async">
 		<?php endif; ?>
 
 		<?php if ( 'mp4' === $type ) : ?>
-			<video class="hero-video" autoplay muted loop playsinline preload="metadata" <?php echo $poster ? 'poster="' . esc_url( $poster ) . '"' : ''; ?> data-hero-video>
+			<video class="hero-video" autoplay muted loop playsinline preload="auto" data-hero-video>
 				<source src="<?php echo esc_url( $mp4 ); ?>" type="video/mp4">
 			</video>
 		<?php elseif ( 'youtube' === $type ) : ?>

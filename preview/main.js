@@ -69,29 +69,77 @@
 			}
 		};
 
+		var reveal = function () { hero.classList.add( 'is-playing' ); };
+
+		// "Hareketi azalt" açıksa video oynamaz; yalnızca o durumda kapak fotoğrafı gösterilir.
+		if ( reduceMotion ) {
+			hero.classList.add( 'is-static' );
+			var still = hero.querySelector( '.hero-poster[data-src]' );
+			if ( still ) { still.src = still.getAttribute( 'data-src' ); }
+		}
+
 		if ( video ) {
-			video.addEventListener( 'playing', function () { hero.classList.add( 'is-playing' ); } );
+			video.addEventListener( 'playing', reveal );
 			if ( reduceMotion ) { setPaused( true ); }
 		}
 
 		if ( ytBox && ! reduceMotion ) {
+			// Sayfanın tamamen yüklenmesi beklenmez: oynatıcı hemen yüklenmeye başlar.
 			var id = ytBox.getAttribute( 'data-yt' );
-			var load = function () {
-				iframe = document.createElement( 'iframe' );
-				iframe.src = 'https://www.youtube-nocookie.com/embed/' + id +
-					'?autoplay=1&mute=1&loop=1&playlist=' + id +
-					'&controls=0&disablekb=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1';
-				iframe.title = 'Arka plan videosu';
-				iframe.allow = 'autoplay; encrypted-media';
-				iframe.setAttribute( 'tabindex', '-1' );
-				iframe.setAttribute( 'aria-hidden', 'true' );
-				iframe.addEventListener( 'load', function () {
-					// YouTube başlık/arayüz kaybolsun diye kısa gecikmeyle görünür yap.
-					setTimeout( function () { hero.classList.add( 'is-playing' ); }, 1600 );
-				} );
-				ytBox.appendChild( iframe );
+			iframe = document.createElement( 'iframe' );
+			iframe.src = 'https://www.youtube-nocookie.com/embed/' + id +
+				'?autoplay=1&mute=1&loop=1&playlist=' + id +
+				'&controls=0&disablekb=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1' +
+				'&origin=' + encodeURIComponent( location.origin );
+			iframe.title = 'Arka plan videosu';
+			iframe.allow = 'autoplay; encrypted-media';
+			iframe.setAttribute( 'tabindex', '-1' );
+			iframe.setAttribute( 'aria-hidden', 'true' );
+
+			var send = function ( func ) {
+				iframe.contentWindow.postMessage( JSON.stringify( { event: 'command', func: func, args: [], id: 'hero', channel: 'widget' } ), '*' );
 			};
-			if ( document.readyState === 'complete' ) { load(); } else { window.addEventListener( 'load', load ); }
+
+			var connected = false;
+			var handshake = null;
+
+			// Video gerçekten oynamaya başlayınca göster (YouTube'un yükleme ekranı görünmesin).
+			window.addEventListener( 'message', function ( e ) {
+				if ( ! /youtube/.test( e.origin ) || typeof e.data !== 'string' ) { return; }
+				try {
+					var d = JSON.parse( e.data );
+					if ( ! connected ) {
+						connected = true;
+						clearInterval( handshake );
+					}
+					var state = d.info && typeof d.info.playerState === 'number' ? d.info.playerState : null;
+					// Oynatıcı hazır ama başlamadıysa (bazı tarayıcılar autoplay'i yok sayar): sessize alıp açıkça başlat.
+					if ( ! paused && ( d.event === 'onReady' || state === -1 || state === 5 ) ) {
+						send( 'mute' );
+						send( 'playVideo' );
+					}
+					if ( state === 1 ) {
+						setTimeout( reveal, 300 );
+					}
+				} catch ( err ) {}
+			} );
+			iframe.addEventListener( 'load', function () {
+				// Oynatıcı içindeki betik hazır olana kadar bağlantı isteğini tekrarla (YouTube API'sinin yaptığı gibi).
+				var tries = 0;
+				handshake = setInterval( function () {
+					if ( connected || ++tries > 40 ) { clearInterval( handshake ); return; }
+					iframe.contentWindow.postMessage( JSON.stringify( { event: 'listening', id: 'hero', channel: 'widget' } ), '*' );
+				}, 250 );
+				// Telefon otomatik oynatmayı tamamen engellerse (ör. düşük güç modu) siyah ekran kalmasın.
+				setTimeout( function () {
+					if ( ! hero.classList.contains( 'is-playing' ) ) {
+						hero.classList.add( 'is-static' );
+						var still = hero.querySelector( '.hero-poster[data-src]' );
+						if ( still && ! still.src ) { still.src = still.getAttribute( 'data-src' ); }
+					}
+				}, 4000 );
+			} );
+			ytBox.appendChild( iframe );
 		} else if ( ytBox ) {
 			setPaused( true );
 		}

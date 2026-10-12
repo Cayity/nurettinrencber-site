@@ -32,7 +32,7 @@ Text Domain: rencber
 
 /* ---------- Temel ---------- */
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); -webkit-text-size-adjust: 100%; overflow-x: hidden; overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
 	margin: 0;
@@ -41,6 +41,8 @@ body {
 	font: 400 16px/1.65 var(--sans);
 	-webkit-font-smoothing: antialiased;
 	text-rendering: optimizeLegibility;
+	overflow-x: hidden; overflow-x: clip;
+	-webkit-tap-highlight-color: transparent;
 }
 img, video, iframe { display: block; max-width: 100%; }
 img { height: auto; }
@@ -53,7 +55,11 @@ ul, ol { margin: 0; padding: 0; }
 button { font: inherit; color: inherit; }
 ::selection { background: var(--accent); color: var(--accent-ink); }
 
-.wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+.wrap {
+	width: 100%; max-width: var(--wrap); margin: 0 auto;
+	padding-left: max(var(--gutter), env(safe-area-inset-left));
+	padding-right: max(var(--gutter), env(safe-area-inset-right));
+}
 .wrap.narrow { max-width: 820px; }
 .screen-reader-text, .skip-link:not(:focus) {
 	position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
@@ -83,9 +89,15 @@ button { font: inherit; color: inherit; }
 	transition: background .35s var(--ease), border-color .35s var(--ease);
 	border-bottom: 1px solid transparent;
 }
-.site-header.is-solid, .is-inner .site-header, .nav-open .site-header {
-	background: rgba(15, 13, 11, .92); backdrop-filter: blur(12px); border-bottom-color: var(--line);
+/* Bulanık zemin ayrı katmanda: backdrop-filter başlığın kendisinde olursa
+   içindeki position:fixed mobil menü ekrana değil başlığa göre konumlanır. */
+.site-header::before {
+	content: ""; position: absolute; inset: 0; z-index: -1;
+	background: rgba(15, 13, 11, .92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+	opacity: 0; transition: opacity .35s var(--ease);
 }
+.site-header.is-solid::before, .is-inner .site-header::before, .nav-open .site-header::before { opacity: 1; }
+.site-header.is-solid, .is-inner .site-header, .nav-open .site-header { border-bottom-color: var(--line); }
 .header-inner { height: 100%; display: flex; align-items: center; gap: 32px; }
 .brand { text-decoration: none; flex-shrink: 0; }
 .brand:hover { color: var(--bone); }
@@ -123,7 +135,8 @@ button { font: inherit; color: inherit; }
 @media (max-width: 1080px) {
 	.nav-toggle { display: block; }
 	.primary-nav {
-		position: fixed; inset: var(--header-h) 0 0; background: var(--ink); flex-direction: column; align-items: flex-start;
+		position: fixed; top: var(--header-h); left: 0; right: 0; height: calc(100vh - var(--header-h)); height: calc(100dvh - var(--header-h));
+		z-index: 60; background: var(--ink); flex-direction: column; align-items: flex-start;
 		padding: 32px var(--gutter); gap: 32px; overflow-y: auto;
 		opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .3s var(--ease), transform .3s var(--ease), visibility .3s;
 	}
@@ -141,6 +154,8 @@ button { font: inherit; color: inherit; }
 .hero-media { position: absolute; inset: 0; z-index: -2; background: var(--ink); }
 .hero-poster, .hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-poster { animation: heroZoom 18s var(--ease) both; }
+.hero[data-hero="youtube"] .hero-poster, .hero[data-hero="mp4"] .hero-poster { display: none; }
+.hero.is-static .hero-poster { display: block; animation: none; }
 @keyframes heroZoom { from { transform: scale(1.08); } to { transform: scale(1); } }
 .hero-video { opacity: 0; transition: opacity 1.2s var(--ease); }
 .hero-yt { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 1.4s var(--ease); }
@@ -250,8 +265,8 @@ button { font: inherit; color: inherit; }
 	.event-date { width: 64px; height: 72px; grid-row: span 2; align-self: start; }
 	.event-day { font-size: 34px; }
 	.event-buy { grid-column: 2; justify-content: space-between; margin-top: 10px; }
-	.event-meta span + span::before { margin-right: 10px; }
-	.event-meta { gap: 2px 10px; font-size: 14px; }
+	.event-meta { flex-direction: column; gap: 2px; font-size: 14px; }
+	.event-meta span + span::before { content: none; }
 }
 
 /* Tek konser */
@@ -476,3 +491,43 @@ button { font: inherit; color: inherit; }
 .to-top:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .nav-open .to-top { opacity: 0; visibility: hidden; }
 @media (max-width: 600px) { .to-top { right: 16px; bottom: 16px; width: 44px; height: 44px; } }
+
+/* ---------- Mobil ince ayarlar ---------- */
+@media (max-width: 760px) {
+	:root { --header-h: 64px; }
+	.brand-text { font-size: 22px; }
+	.event::before { inset: 0; }                     /* hover zemini ekrandan taşmasın */
+	.about-media::after { inset: 12px -10px -12px 12px; }
+	.about-media { margin-right: 10px; }
+	.section { padding: 64px 0; }
+	.section-head { margin-bottom: 32px; }
+	.section-link { margin-left: 0; }
+	.hero-content { padding-top: calc(var(--header-h) + 6vh); padding-bottom: 4vh; }
+	.hero-text { margin: 18px 0 26px; }
+	.hero-actions .btn { flex: 1 1 auto; }
+	.hero-foot { gap: 16px; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+	.hero-next { width: 100%; }
+	.hero-platforms { gap: 20px; }
+	.hero-platforms a { padding: 6px; margin: -6px; } /* 44px dokunma alanı */
+	.platform-name { font-size: 24px; }
+	.platform { padding: 18px 2px; }
+	.listen-embed iframe { height: 380px; }
+	.video-title { font-size: 19px; }
+	.video.is-featured .video-title { font-size: 24px; }
+	.contact-name { font-size: 34px; }
+	.contact-line { font-size: 17px; word-break: break-word; }
+	.footer-platforms { gap: 14px 22px; }
+	.footer-bottom { flex-direction: column; }
+	.to-top { bottom: max(16px, env(safe-area-inset-bottom)); }
+	.event-facts div { grid-template-columns: 76px 1fr; }
+	.event-card { padding: 22px; }
+}
+@media (max-width: 380px) {
+	.hero-title { font-size: 52px; }
+	.event-buy { flex-wrap: wrap; gap: 10px 16px; }
+	.event-city { font-size: 26px; }
+	.album-grid { gap: 28px 12px; }
+	.album-title, .album-grid.is-singles .album-title { font-size: 18px; }
+	.home-list { grid-template-columns: 1fr; }
+	.btn { padding: 0 1.2em; letter-spacing: .1em; }
+}
