@@ -4,6 +4,52 @@
 
 	var reduceMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
 
+	/* Tarihi geçen konserleri gizle (sayfa önbellekten/statik sürümden gelse bile takvim güncel kalsın). */
+	( function () {
+		var today;
+		try {
+			today = new Date().toLocaleDateString( 'sv-SE', { timeZone: 'Europe/Istanbul' } ); // YYYY-MM-DD
+		} catch ( e ) {
+			today = new Date().toISOString().slice( 0, 10 );
+		}
+		var events = Array.prototype.slice.call( document.querySelectorAll( '.event-list .event' ) );
+		if ( ! events.length ) { return; }
+		var left = events.filter( function ( ev ) {
+			var t = ev.querySelector( 'time[datetime]' );
+			var d = t ? t.getAttribute( 'datetime' ).slice( 0, 10 ) : '';
+			if ( d && d < today ) { ev.remove(); return false; }
+			return true;
+		} );
+		document.querySelectorAll( '.event-list' ).forEach( function ( list ) {
+			if ( ! list.children.length ) {
+				var note = document.querySelector( '[data-events-empty]' );
+				if ( note ) { note.hidden = false; }
+				list.remove();
+			}
+		} );
+		// Açılıştaki "Sıradaki konser" bilgisini ilk kalan konsere göre güncelle.
+		var next = document.querySelector( '.hero-next' );
+		if ( next ) {
+			if ( ! left.length ) {
+				next.style.visibility = 'hidden';
+			} else {
+				var e = left[ 0 ];
+				var txt = function ( s ) { var n = e.querySelector( s ); return n ? n.textContent.trim() : ''; };
+				var body = next.querySelector( '.hero-next-body' );
+				var venue = e.querySelectorAll( '.event-meta span' );
+				var link = e.querySelector( '.event-city a' );
+				if ( body ) {
+					body.innerHTML = '';
+					var b = document.createElement( 'b' );
+					b.textContent = txt( '.event-day' ) + ' ' + txt( '.event-month' );
+					body.appendChild( b );
+					body.appendChild( document.createTextNode( ' · ' + txt( '.event-city' ) + ( venue[ 1 ] ? ' · ' + venue[ 1 ].textContent.trim() : '' ) ) );
+				}
+				if ( link ) { next.setAttribute( 'href', link.getAttribute( 'href' ) ); }
+			}
+		}
+	} )();
+
 	/* Başlık: kaydırınca koyulaşır. */
 	var header = document.querySelector( '[data-header]' );
 	if ( header ) {

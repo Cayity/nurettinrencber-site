@@ -21,6 +21,8 @@ $events = rencber_upcoming_events( max( 1, (int) rencber_mod( 'events_limit' ) )
 				}
 				?>
 			</ol>
+			<?php // Sayfa önbellekten gelip tüm konserler geçmişte kalırsa main.js bunu gösterir. ?>
+			<p class="empty-note" data-events-empty hidden><?php echo esc_html( rencber_mod( 'events_empty' ) ); ?></p>
 		<?php else : ?>
 			<p class="empty-note"><?php echo esc_html( rencber_mod( 'events_empty' ) ); ?></p>
 		<?php endif; ?>
