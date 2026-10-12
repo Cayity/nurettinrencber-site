@@ -21,6 +21,8 @@ function rencber_defaults() {
 		'hero_youtube'       => 'https://www.youtube.com/watch?v=5KOIfMAcb-Q',
 		'hero_mp4'           => '',
 		'hero_poster'        => '',
+		'hero_start'         => 10,
+		'hero_end'           => 0,
 		'hero_kicker'        => 'Türkü · Ezgi · Söz',
 		'hero_title'         => 'Nurettin Rençber',
 		'hero_text'          => 'Dağ türkülerinden deniz şarkılarına; otuz yılı aşkın bir yolculuk.',

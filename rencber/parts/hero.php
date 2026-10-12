@@ -24,7 +24,7 @@ $overlay = max( 0, min( 90, (int) rencber_mod( 'hero_overlay' ) ) ) / 100;
 $next    = rencber_upcoming_events( 1 );
 $title   = rencber_mod( 'hero_title' );
 ?>
-<section class="hero" data-hero="<?php echo esc_attr( $type ); ?>" aria-label="<?php echo esc_attr( $title ); ?>">
+<section class="hero" data-hero="<?php echo esc_attr( $type ); ?>" data-start="<?php echo esc_attr( (int) rencber_mod( 'hero_start' ) ); ?>" data-end="<?php echo esc_attr( (int) rencber_mod( 'hero_end' ) ); ?>" aria-label="<?php echo esc_attr( $title ); ?>">
 	<div class="hero-media">
 		<?php if ( $poster && 'image' === $type ) : ?>
 			<img class="hero-poster" src="<?php echo esc_url( $poster ); ?>" alt="" fetchpriority="high" decoding="async">
@@ -34,8 +34,9 @@ $title   = rencber_mod( 'hero_title' );
 		<?php endif; ?>
 
 		<?php if ( 'mp4' === $type ) : ?>
+			<?php $frag = (int) rencber_mod( 'hero_start' ) ? '#t=' . (int) rencber_mod( 'hero_start' ) : ''; ?>
 			<video class="hero-video" autoplay muted loop playsinline preload="auto" data-hero-video>
-				<source src="<?php echo esc_url( $mp4 ); ?>" type="video/mp4">
+				<source src="<?php echo esc_url( $mp4 . $frag ); ?>" type="video/mp4">
 			</video>
 		<?php elseif ( 'youtube' === $type ) : ?>
 			<div class="hero-yt" data-yt="<?php echo esc_attr( $yt_id ); ?>"></div>

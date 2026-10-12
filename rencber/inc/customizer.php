@@ -164,6 +164,8 @@ function rencber_customize_register( $wp_customize ) {
 	) );
 	$add( 'hero_youtube', 'rencber_hero', __( 'YouTube video bağlantısı', 'rencber' ), 'url', array( 'description' => __( 'Ses kapalı ve döngüde oynar.', 'rencber' ) ) );
 	$add( 'hero_mp4', 'rencber_hero', __( 'MP4 video', 'rencber' ), 'media', array( 'mime' => 'video', 'description' => __( '10–30 sn, 1080p, 8 MB altı önerilir.', 'rencber' ) ) );
+	$add( 'hero_start', 'rencber_hero', __( 'Videoyu kaçıncı saniyeden başlat', 'rencber' ), 'number', array( 'input_attrs' => array( 'min' => 0, 'step' => 1 ), 'description' => __( 'Videonun başındaki yazı/jenerik görünmesin diye. Döngü de bu saniyeden döner.', 'rencber' ) ) );
+	$add( 'hero_end', 'rencber_hero', __( 'Videoyu kaçıncı saniyede bitir (0 = sonuna kadar)', 'rencber' ), 'number', array( 'input_attrs' => array( 'min' => 0, 'step' => 1 ), 'description' => __( 'Sondaki yazıyı da atlamak için.', 'rencber' ) ) );
 	$add( 'hero_poster', 'rencber_hero', __( 'Kapak fotoğrafı', 'rencber' ), 'media', array( 'description' => __( 'Video yüklenirken ve “yalnızca fotoğraf” seçiliyken görünür.', 'rencber' ) ) );
 	$add( 'hero_overlay', 'rencber_hero', __( 'Karartma (%)', 'rencber' ), 'range', array( 'input_attrs' => array( 'min' => 0, 'max' => 90, 'step' => 5 ) ) );
 	$add( 'hero_kicker', 'rencber_hero', __( 'Üst küçük yazı', 'rencber' ) );

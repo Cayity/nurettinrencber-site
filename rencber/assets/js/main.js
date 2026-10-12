@@ -55,6 +55,9 @@
 		var ytBox = hero.querySelector( '[data-yt]' );
 		var iframe = null;
 		var paused = false;
+		// Videonun başındaki/sonundaki yazıları atlamak için başlangıç ve bitiş saniyesi (panelden).
+		var clipStart = parseFloat( hero.getAttribute( 'data-start' ) ) || 0;
+		var clipEnd = parseFloat( hero.getAttribute( 'data-end' ) ) || 0;
 
 		var setPaused = function ( p ) {
 			paused = p;
@@ -80,6 +83,16 @@
 
 		if ( video ) {
 			video.addEventListener( 'playing', reveal );
+			var toStart = function () { try { video.currentTime = clipStart; } catch ( err ) {} };
+			if ( clipStart ) {
+				video.loop = false;
+				video.readyState >= 1 ? toStart() : video.addEventListener( 'loadedmetadata', toStart );
+			}
+			// Kendi döngümüz: bitişte (ya da bitiş saniyesinde) başlangıç saniyesine dön.
+			video.addEventListener( 'timeupdate', function () {
+				if ( clipEnd && video.currentTime >= clipEnd ) { toStart(); }
+			} );
+			video.addEventListener( 'ended', function () { toStart(); video.play().catch( function () {} ); } );
 			if ( reduceMotion ) { setPaused( true ); }
 		}
 
@@ -88,7 +101,8 @@
 			var id = ytBox.getAttribute( 'data-yt' );
 			iframe = document.createElement( 'iframe' );
 			iframe.src = 'https://www.youtube-nocookie.com/embed/' + id +
-				'?autoplay=1&mute=1&loop=1&playlist=' + id +
+				// loop parametresi her turda 0. saniyeden başlatır; döngü aşağıda elle yapılır.
+				'?autoplay=1&mute=1&start=' + Math.floor( clipStart ) + ( clipEnd ? '&end=' + Math.floor( clipEnd ) : '' ) +
 				'&controls=0&disablekb=1&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&enablejsapi=1' +
 				'&origin=' + encodeURIComponent( location.origin );
 			iframe.title = 'Arka plan videosu';
@@ -96,8 +110,8 @@
 			iframe.setAttribute( 'tabindex', '-1' );
 			iframe.setAttribute( 'aria-hidden', 'true' );
 
-			var send = function ( func ) {
-				iframe.contentWindow.postMessage( JSON.stringify( { event: 'command', func: func, args: [], id: 'hero', channel: 'widget' } ), '*' );
+			var send = function ( func, args ) {
+				iframe.contentWindow.postMessage( JSON.stringify( { event: 'command', func: func, args: args || [], id: 'hero', channel: 'widget' } ), '*' );
 			};
 
 			var connected = false;
@@ -120,6 +134,11 @@
 					}
 					if ( state === 1 ) {
 						setTimeout( reveal, 300 );
+					}
+					// Video bitti: yazılı girişe dönmeden başlangıç saniyesinden tekrar oynat.
+					if ( state === 0 ) {
+						send( 'seekTo', [ clipStart, true ] );
+						send( 'playVideo' );
 					}
 				} catch ( err ) {}
 			} );
