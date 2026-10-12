@@ -27,6 +27,7 @@ OUT = os.path.join(ROOT, "preview")
 IMG = os.path.join(OUT, "img")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 SITE = "https://www.nurettinrencber.com.tr"
+LIVE = SITE  # alan adı Vercel'e bağlanınca site bu adreste yayınlanır
 UP = SITE + "/wp-content/uploads/"
 
 ARTIST = "Nurettin Rençber"
@@ -140,7 +141,16 @@ def main():
     # --- Görseller ---
     poster = save_img(UP + "2025/01/s001.jpg", "hero", 2000)
     about = save_img(UP + "2025/01/hakkimda.jpeg", "hakkimda", 1200)
-    share = save_img(UP + "2025/01/0008.jpg", "paylasim", 1200)
+    share = "img/paylasim.jpg"  # sosyal medya paylaşımı: 1200×630 JPG (WhatsApp webp'yi her zaman göstermez)
+    if not os.path.exists(os.path.join(OUT, share)):
+        im = Image.open(io.BytesIO(fetch(UP + "2025/01/0008.jpg"))).convert("RGB")
+        w, h = im.size
+        target = 1200 / 630
+        if w / h > target:
+            nw = int(h * target); im = im.crop(((w - nw) // 2, 0, (w - nw) // 2 + nw, h))
+        else:
+            nh = int(w / target); im = im.crop((0, (h - nh) // 2, w, (h - nh) // 2 + nh))
+        im.resize((1200, 630)).save(os.path.join(OUT, share), "JPEG", quality=84)
     gallery = []
     for i, g in enumerate(GALLERY):
         try:
@@ -228,7 +238,10 @@ def main():
             "performer": {"@type": ["Person", "MusicGroup"], "@id": artist["@id"], "name": ARTIST},
         }
         if p:
-            ev["offers"] = {"@type": "Offer", "price": p, "priceCurrency": "TRY", "availability": "https://schema.org/InStock", "url": "https://www.nurettinrencber.com.tr/konserler/"}
+            ev["offers"] = {"@type": "Offer", "price": p, "priceCurrency": "TRY", "availability": "https://schema.org/InStock", "url": LIVE + "/#konserler"}
+        ev["url"] = LIVE + "/#konserler"
+        ev["image"] = [LIVE + "/" + share]
+        ev["organizer"] = {"@type": "Organization", "name": ARTIST, "url": LIVE + "/"}
         graph.append(ev)
     schema = json.dumps({"@context": "https://schema.org", "@graph": graph}, ensure_ascii=False)
 
@@ -239,6 +252,7 @@ def main():
             .replace("{{HERO_ICONS}}", hero_icons)
             .replace("{{POSTER}}", poster)
             .replace("{{SHARE}}", share)
+            .replace("{{SITE}}", LIVE)
             .replace("{{NEXT}}", next_html)
             .replace("{{PAUSE_PLAY}}", icon("pause", 18) + icon("play", 18))
             .replace("{{PLAY16}}", icon("play", 16))
@@ -270,8 +284,29 @@ def main():
     shutil.copy(os.path.join(THEME, "style.css"), os.path.join(OUT, "style.css"))
     shutil.copy(os.path.join(THEME, "assets", "js", "main.js"), os.path.join(OUT, "main.js"))
 
-    # Tema paketi (WordPress › Görünüm › Temalar › Yeni ekle › Tema yükle).
-    with zipfile.ZipFile(os.path.join(OUT, "rencber.zip"), "w", zipfile.ZIP_DEFLATED) as z:
+    # Favicon (saz) site köküne: Google /favicon.ico ve 48px katı ikonları okur.
+    for f in ("favicon.ico", "favicon.svg", "favicon-48.png", "favicon-96.png", "icon-192.png", "icon-512.png", "apple-touch-icon.png"):
+        shutil.copy(os.path.join(THEME, "assets", "img", f), os.path.join(OUT, f))
+    open(os.path.join(OUT, "site.webmanifest"), "w", encoding="utf-8").write(json.dumps({
+        "name": ARTIST, "short_name": "Rençber", "start_url": "/", "display": "standalone",
+        "background_color": "#0f0d0b", "theme_color": "#0f0d0b",
+        "icons": [{"src": "/icon-192.png", "sizes": "192x192", "type": "image/png"},
+                  {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png"}],
+    }, ensure_ascii=False, indent=1))
+    open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8").write(
+        "User-agent: *\nAllow: /\n\n" f"Sitemap: {LIVE}/sitemap.xml\n")
+    open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        f'  <url><loc>{LIVE}/</loc><lastmod>{date.today().isoformat()}</lastmod><changefreq>weekly</changefreq></url>\n'
+        '</urlset>\n')
+
+    # Tema paketi (WordPress › Görünüm › Temalar › Yeni ekle › Tema yükle) — yayın klasörünün dışında.
+    os.makedirs(os.path.join(ROOT, "dist"), exist_ok=True)
+    stale = os.path.join(OUT, "rencber.zip")
+    if os.path.exists(stale):
+        os.remove(stale)
+    with zipfile.ZipFile(os.path.join(ROOT, "dist", "rencber.zip"), "w", zipfile.ZIP_DEFLATED) as z:
         for base, _, files in os.walk(THEME):
             for f in files:
                 full = os.path.join(base, f)

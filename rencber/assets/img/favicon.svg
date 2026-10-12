@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Nurettin Rençber</title>
+  <rect width="64" height="64" rx="14" fill="#0f0d0b"/>
+  <g transform="rotate(45 32 33)">
+    <!-- burgu kutusu ve kulaklar -->
+    <rect x="29.4" y="1.5" width="5.2" height="8.5" rx="1.4" fill="#d49a4a"/>
+    <circle cx="27.2" cy="3.6" r="1.6" fill="#d49a4a"/>
+    <circle cx="27.2" cy="7.8" r="1.6" fill="#d49a4a"/>
+    <circle cx="36.8" cy="3.6" r="1.6" fill="#d49a4a"/>
+    <circle cx="36.8" cy="7.8" r="1.6" fill="#d49a4a"/>
+    <!-- sap -->
+    <rect x="30.3" y="8" width="3.4" height="24" fill="#d49a4a"/>
+    <!-- armut gövde -->
+    <path d="M32 30C39.8 33.4 43.6 40 43.2 47.8 42.8 55.4 37.8 60.5 32 60.5S21.2 55.4 20.8 47.8C20.4 40 24.2 33.4 32 30Z" fill="#d49a4a"/>
+    <!-- ses deliği, teller, eşik -->
+    <ellipse cx="32" cy="46.5" rx="3" ry="2.4" fill="#0f0d0b"/>
+    <path d="M31.1 10V55M32.9 10V55" stroke="#0f0d0b" stroke-width=".9" stroke-linecap="round"/>
+    <rect x="27.8" y="53.4" width="8.4" height="2.2" rx="1.1" fill="#0f0d0b"/>
+  </g>
+</svg>

@@ -85,6 +85,23 @@ function rencber_resource_hints( $urls, $relation ) {
 add_filter( 'wp_resource_hints', 'rencber_resource_hints', 10, 2 );
 
 /**
+ * Saz favicon'u. Özelleştir › Site kimliği'nden "Site simgesi" yüklenmişse WordPress'inki kullanılır.
+ * Google arama sonuçları 48px katı kare ikonları tercih eder.
+ */
+function rencber_favicon() {
+	if ( has_site_icon() ) {
+		return;
+	}
+	$img = RENCBER_URI . '/assets/img/';
+	printf( '<link rel="icon" href="%s" sizes="any">' . "\n", esc_url( $img . 'favicon.ico' ) );
+	printf( '<link rel="icon" href="%s" type="image/svg+xml">' . "\n", esc_url( $img . 'favicon.svg' ) );
+	printf( '<link rel="icon" href="%s" sizes="48x48" type="image/png">' . "\n", esc_url( $img . 'favicon-48.png' ) );
+	printf( '<link rel="icon" href="%s" sizes="192x192" type="image/png">' . "\n", esc_url( $img . 'icon-192.png' ) );
+	printf( '<link rel="apple-touch-icon" href="%s">' . "\n", esc_url( $img . 'apple-touch-icon.png' ) );
+}
+add_action( 'wp_head', 'rencber_favicon', 3 );
+
+/**
  * Eski Enfold sayfa oluşturucu kısa kodlarını (av_*) temizler; içerik metni kalır.
  * Tema değişince eski sayfalarda [av_section ...] gibi çıktılar görünmesin diye.
  */

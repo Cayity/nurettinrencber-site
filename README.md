@@ -25,7 +25,7 @@ Her şey **Görünüm › Özelleştir › Rençber Site Ayarları** panelinden 
 
 ## Kurulum
 
-1. `preview/rencber.zip` dosyasını indirin (önizleme sayfasının altındaki bağlantıdan da indirilebilir).
+1. `dist/rencber.zip` dosyasını kullanın.
 2. WordPress › Görünüm › Temalar › Yeni ekle › **Tema yükle** › `rencber.zip` › Etkinleştir.
 3. Tema ilk açılışta şunları kendiliğinden aktarır:
    - eski sitedeki albüm kapaklarını, galeriyi ve biyografi fotoğrafını,
@@ -42,4 +42,6 @@ Her şey **Görünüm › Özelleştir › Rençber Site Ayarları** panelinden 
 python tools/build_preview.py
 ```
 
-Bu komut görselleri indirir, `preview/index.html` dosyasını temanın CSS/JS dosyalarıyla üretir ve `preview/rencber.zip` paketini oluşturur. Vercel `preview/` klasörünü yayınlar (`vercel.json`). Önizleme `noindex` olarak işaretlidir; Google yalnızca asıl siteyi görür.
+Bu komut görselleri indirir, `preview/index.html` dosyasını temanın CSS/JS dosyalarıyla üretir; favicon, `robots.txt`, `sitemap.xml` ve `dist/rencber.zip` paketini oluşturur. Vercel `preview/` klasörünü yayınlar (`vercel.json`); eski WordPress adresleri (`/hakkimda/` vb.) ilgili bölümlere yönlendirilir.
+
+**Not:** Vercel sürümü statiktir; konser/albüm değişiklikleri `tools/build_preview.py` ve `rencber/inc/yayinlar.json` üzerinden yapılıp yeniden yayınlanır.

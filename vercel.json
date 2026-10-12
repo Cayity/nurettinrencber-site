@@ -4,5 +4,26 @@
   "buildCommand": "",
   "installCommand": "",
   "outputDirectory": "preview",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/hakkimda", "destination": "/#hakkinda", "permanent": true },
+    { "source": "/albumlerim", "destination": "/#albumler", "permanent": true },
+    { "source": "/albumler", "destination": "/#albumler", "permanent": true },
+    { "source": "/album/:slug*", "destination": "/#albumler", "permanent": true },
+    { "source": "/galeri", "destination": "/#galeri", "permanent": true },
+    { "source": "/iletisim", "destination": "/#iletisim", "permanent": true },
+    { "source": "/konserler", "destination": "/#konserler", "permanent": true },
+    { "source": "/konser/:slug*", "destination": "/#konserler", "permanent": true },
+    { "source": "/ana-sayfa", "destination": "/", "permanent": true },
+    { "source": "/wp-admin/:path*", "destination": "/", "permanent": false },
+    { "source": "/wp-login.php", "destination": "/", "permanent": false },
+    { "source": "/feed/:path*", "destination": "/", "permanent": true }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)\\.(webp|jpg|png|svg|ico)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
+    }
+  ]
 }
