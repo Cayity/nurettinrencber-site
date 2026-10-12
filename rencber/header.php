@@ -11,6 +11,8 @@ defined( 'ABSPATH' ) || exit;
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<!-- iOS metindeki tarih/adres/telefonları kendiliğinden link yapmasın (tel: ve mailto: linkleri elle verildi). -->
+	<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
 	<meta name="theme-color" content="#0f0d0b">
 	<?php wp_head(); ?>
 </head>
