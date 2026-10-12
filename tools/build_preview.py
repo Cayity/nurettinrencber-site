@@ -201,7 +201,7 @@ def main():
         w, h = dims(small)
         gallery_items.append(f'<li><a href="{big}" data-lightbox><img src="{small}" alt="{ARTIST}" loading="lazy" decoding="async" width="{w}" height="{h}"></a></li>')
 
-    music_icons = "".join(f'<a href="{u}" target="_blank" rel="noopener" aria-label="{l}">{icon(k, 18)}</a>' for k, (l, u) in LINKS.items())
+    music_icons = "".join(f'<a href="{u}" target="_blank" rel="noopener me" aria-label="{l}">{icon(k, 18)}</a>' for k, (l, u) in {**LINKS, **SOCIAL}.items())
     hero_icons = "".join(f'<a href="{u}" target="_blank" rel="noopener" aria-label="{l}">{icon(k, 20)}</a>' for k, (l, u) in LINKS.items())
     platform_rows = "".join(f'''<li><a class="platform platform-{k}" href="{u}" target="_blank" rel="noopener">{icon(k, 24)}<span class="platform-name">{l}</span><span class="platform-go">{"İzle" if k == "youtube" else "Dinle"} {icon("arrow", 14)}</span></a></li>''' for k, (l, u) in LINKS.items())
     footer_links = "".join(f'<li><a href="{u}" target="_blank" rel="noopener me">{icon(k, 18)}<span>{l}</span></a></li>' for k, (l, u) in {**LINKS, **SOCIAL}.items())

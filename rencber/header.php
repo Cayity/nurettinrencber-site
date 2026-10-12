@@ -50,8 +50,9 @@ defined( 'ABSPATH' ) || exit;
 			}
 			?>
 			<div class="nav-platforms">
-				<?php foreach ( rencber_platforms( 'music' ) as $p ) : ?>
-					<a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener" aria-label="<?php echo esc_attr( $p['label'] ); ?>"><?php echo rencber_icon( $p['icon'], 18 ); // phpcs:ignore WordPress.Security.EscapeOutput ?></a>
+				<?php // Doldurulmuş tüm platformlar: Spotify, Apple Music, YouTube… + Instagram, Facebook (boş olanlar görünmez). ?>
+				<?php foreach ( rencber_platforms( 'all' ) as $p ) : ?>
+					<a href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener me" aria-label="<?php echo esc_attr( $p['label'] ); ?>"><?php echo rencber_icon( $p['icon'], 18 ); // phpcs:ignore WordPress.Security.EscapeOutput ?></a>
 				<?php endforeach; ?>
 			</div>
 		</nav>
