@@ -148,3 +148,5 @@ input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var
 	.panel { padding: 22px 14px 80px; }
 	.list li { gap: 10px; }
 }
+
+.setup-missing { text-align: left; color: var(--danger); margin: 16px 0 0; padding-left: 20px; font-size: 14px; }

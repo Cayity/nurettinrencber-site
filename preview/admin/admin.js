@@ -548,7 +548,10 @@
 	} );
 
 	fetch( '/api/admin/session', { credentials: 'same-origin' } ).then( function ( r ) { return r.json(); } ).then( function ( s ) {
-		if ( ! s.configured ) return showOnly( 'setup' );
+		if ( ! s.configured ) {
+			$( '#setup-missing' ).innerHTML = ( s.missing || [] ).map( function ( m ) { return '<li>' + esc( m ) + '</li>'; } ).join( '' );
+			return showOnly( 'setup' );
+		}
 		if ( s.admin ) return load().catch( function ( e ) { showOnly( 'login' ); toast( e.message, true ); } );
 		showOnly( 'login' );
 	} ).catch( function () {
