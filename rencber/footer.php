@@ -35,6 +35,10 @@ defined( 'ABSPATH' ) || exit;
 	</div>
 </footer>
 
+<button class="to-top" type="button" data-to-top aria-label="<?php esc_attr_e( 'Sayfanın başına dön', 'rencber' ); ?>">
+	<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 5.2 4.6 12.6l1.4 1.4L11 9V20h2V9l5 5 1.4-1.4z"/></svg>
+</button>
+
 <?php wp_footer(); ?>
 </body>
 </html>

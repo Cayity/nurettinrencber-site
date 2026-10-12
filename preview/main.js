@@ -14,6 +14,21 @@
 		window.addEventListener( 'scroll', onScroll, { passive: true } );
 	}
 
+	/* Başa dön düğmesi: bir ekran aşağı inince görünür. */
+	var toTop = document.querySelector( '[data-to-top]' );
+	if ( toTop ) {
+		var onScrollTop = function () {
+			toTop.classList.toggle( 'is-visible', window.scrollY > window.innerHeight * 0.8 );
+		};
+		onScrollTop();
+		window.addEventListener( 'scroll', onScrollTop, { passive: true } );
+		toTop.addEventListener( 'click', function () {
+			window.scrollTo( { top: 0, behavior: reduceMotion ? 'auto' : 'smooth' } );
+			var skip = document.querySelector( '.brand' );
+			if ( skip ) { skip.focus( { preventScroll: true } ); }
+		} );
+	}
+
 	/* Mobil menü. */
 	var toggle = document.querySelector( '[data-nav-toggle]' );
 	if ( toggle ) {
